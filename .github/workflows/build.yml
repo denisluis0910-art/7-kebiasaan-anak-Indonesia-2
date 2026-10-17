@@ -1,4 +1,4 @@
-name: Build Flet APK
+name: Build Flet Android APK
 
 on:
   push:
@@ -11,22 +11,34 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Set up Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flet pyinstaller buildozer
+          pip install flet
 
-      - name: Build APK with Flet
+      - name: Build Android APK with Flet
         run: |
-          flet pack main.py --verbose
+          flet build apk --verbose
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
-          path: dist/*
+          path: build/apk/*.apk
+          
